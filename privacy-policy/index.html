@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V2Link — Privacy Policy</title>
+    <meta name="description" content="V2Link Privacy Policy. We collect zero data. Everything stays on your device.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-void: #050508;
+            --bg-deep: #0A0A0F;
+            --bg-card: #12121A;
+            --bg-surface: #1E1E2A;
+            --accent: #4A90D9;
+            --accent-glow: rgba(74, 144, 217, 0.4);
+            --accent-soft: rgba(74, 144, 217, 0.12);
+            --teal: #34C6B4;
+            --text-primary: #F0F0F5;
+            --text-secondary: #9898A6;
+            --text-muted: #5A5A6E;
+            --border: rgba(255,255,255,0.06);
+            --border-glow: rgba(74, 144, 217, 0.2);
+            --glass: rgba(18, 18, 26, 0.7);
+            --glass-border: rgba(255,255,255,0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+        .ambient {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+        }
+        .ambient-orb {
+            position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.1;
+        }
+        .ambient-orb:nth-child(1) {
+            width: 500px; height: 500px; background: var(--accent); top: -100px; right: -100px;
+        }
+        .ambient-orb:nth-child(2) {
+            width: 400px; height: 400px; background: var(--teal); bottom: -100px; left: -100px;
+        }
+
+        /* Nav */
+        .nav {
+            padding: 16px 0;
+            background: rgba(5, 5, 8, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-inner {
+            max-width: 800px; margin: 0 auto; padding: 0 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px; text-decoration: none;
+        }
+        .nav-logo-icon {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, var(--accent), var(--teal));
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 12px; color: #fff;
+        }
+        .nav-logo-text {
+            font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 16px;
+            color: var(--text-primary); letter-spacing: 2px;
+        }
+        .nav-back {
+            color: var(--text-muted); text-decoration: none; font-size: 14px;
+            transition: color 0.2s;
+        }
+        .nav-back:hover { color: var(--accent); }
+
+        /* Content */
+        .content {
+            max-width: 800px; margin: 0 auto; padding: 60px 24px 80px;
+            position: relative; z-index: 1;
+        }
+        .page-label {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px; font-weight: 500; color: var(--accent);
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+        }
+        .page-label::before {
+            content: ''; width: 20px; height: 1px; background: var(--accent);
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px; font-weight: 700; margin-bottom: 8px;
+        }
+        .updated {
+            font-size: 14px; color: var(--text-muted); margin-bottom: 48px;
+        }
+        .intro {
+            font-size: 17px; color: var(--text-secondary); margin-bottom: 32px;
+        }
+        .highlight {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-left: 3px solid var(--accent);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 32px 0;
+        }
+        .highlight p { margin: 0; color: #aac8e8; font-size: 15px; }
+        .highlight strong { color: var(--text-primary); }
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px; font-weight: 600; color: var(--accent);
+            margin-top: 48px; margin-bottom: 16px; letter-spacing: 0.5px;
+        }
+        p { margin-bottom: 16px; color: var(--text-secondary); font-size: 15px; line-height: 1.8; }
+        ul {
+            margin-bottom: 16px; padding-left: 0; list-style: none;
+        }
+        li {
+            padding: 8px 0 8px 28px; color: var(--text-secondary); font-size: 15px;
+            position: relative; line-height: 1.6;
+        }
+        li::before {
+            content: '';
+            position: absolute; left: 8px; top: 16px;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent); box-shadow: 0 0 6px var(--accent-glow);
+        }
+        li strong { color: var(--text-primary); }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0;
+            position: relative; z-index: 1;
+        }
+        .footer-inner {
+            max-width: 800px; margin: 0 auto; padding: 0 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .footer-text { font-size: 13px; color: var(--text-muted); }
+        .footer-links { display: flex; gap: 20px; list-style: none; }
+        .footer-links a { color: var(--text-muted); font-size: 13px; text-decoration: none; }
+        .footer-links a:hover { color: var(--accent); }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 28px; }
+            .content { padding: 40px 20px 60px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient">
+        <div class="ambient-orb"></div>
+        <div class="ambient-orb"></div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">
+                <div class="nav-logo-icon">V2</div>
+                <span class="nav-logo-text">V2LINK</span>
+            </a>
+            <a href="/" class="nav-back">&larr; Back to Home</a>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div class="page-label">Legal</div>
+        <h1>Privacy Policy</h1>
+        <p class="updated">Last updated: April 12, 2026</p>
+
+        <p class="intro">V2Link ("we", "our", or "the app") is a proxy client application for iOS. This Privacy Policy explains how we handle information when you use our application.</p>
+
+        <div class="highlight">
+            <p><strong>In short:</strong> V2Link does not collect, store, transmit, or share any personal data, network activity, browsing history, or any other user information. Everything stays on your device.</p>
+        </div>
+
+        <h2>1. Information We Do Not Collect</h2>
+        <p>V2Link is designed with privacy as a core principle. We do <strong>not</strong> collect:</p>
+        <ul>
+            <li>Personal information (name, email, phone number, address)</li>
+            <li>Network activity or browsing history</li>
+            <li>DNS queries or connection logs</li>
+            <li>IP addresses (yours or the servers you connect to)</li>
+            <li>Device identifiers or advertising IDs</li>
+            <li>Location data</li>
+            <li>Usage analytics or telemetry</li>
+            <li>Crash reports</li>
+        </ul>
+
+        <h2>2. Data That Stays on Your Device</h2>
+        <p>The following data is stored <strong>locally on your device only</strong> and is never transmitted to us or any third party:</p>
+        <ul>
+            <li><strong>Server configurations</strong> — proxy server addresses, ports, and protocol settings you import</li>
+            <li><strong>Subscription URLs</strong> — links to your server providers</li>
+            <li><strong>App settings</strong> — your preferences for DNS, routing, theme, and language</li>
+            <li><strong>Connection statistics</strong> — duration, bytes transferred (calculated locally from network interfaces)</li>
+        </ul>
+        <p>This data is stored in the app's sandboxed storage and App Group container. It is not accessible to other applications and is removed when you delete the app.</p>
+
+        <h2>3. Network Connections</h2>
+        <p>V2Link establishes network connections solely for the purposes you initiate:</p>
+        <ul>
+            <li><strong>VPN tunnel</strong> — connecting to proxy servers you configure. Traffic flows directly between your device and your chosen server. We have no visibility into this traffic.</li>
+            <li><strong>Subscription updates</strong> — fetching server lists from URLs you provide. These requests go directly to your subscription provider, not to us.</li>
+            <li><strong>Geo file updates</strong> — optional downloads of routing rule files from public GitHub repositories.</li>
+            <li><strong>Ping tests</strong> — TCP connections to your configured servers to measure latency.</li>
+        </ul>
+        <p>We do not operate any servers, proxies, or infrastructure that your traffic passes through. We do not have the ability to monitor, log, or inspect your network activity.</p>
+
+        <h2>4. Third-Party Services</h2>
+        <p>V2Link does <strong>not</strong> integrate any third-party analytics, advertising, tracking, or crash reporting services. There are no SDKs from Google, Facebook, Firebase, or any other third party that collect data.</p>
+
+        <h2>5. Subscription Providers</h2>
+        <p>When you add a subscription URL, the app connects directly to the server specified in that URL to download your server list. This connection is between your device and your subscription provider. We are not involved in this process and have no access to your subscription data.</p>
+        <p>Your subscription provider may have their own privacy policy. We recommend reviewing it.</p>
+
+        <h2>6. Camera Access</h2>
+        <p>V2Link may request access to your device's camera solely for the purpose of scanning QR codes to import server configurations. Camera data is processed locally in real-time and is never stored, recorded, or transmitted.</p>
+
+        <h2>7. VPN Configuration</h2>
+        <p>V2Link uses the iOS Network Extension framework to create a VPN configuration on your device. This is required by iOS to route network traffic through proxy servers. The VPN configuration is managed entirely by iOS and stored in your device's system settings.</p>
+
+        <h2>8. Children's Privacy</h2>
+        <p>V2Link does not knowingly collect any information from anyone, including children under the age of 13. Since we do not collect any data, there is no children's data to protect.</p>
+
+        <h2>9. Data Security</h2>
+        <p>Since no user data is collected or transmitted, there is no data to secure on our end. Your local app data is protected by iOS's sandboxing and encryption mechanisms.</p>
+
+        <h2>10. Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated "Last updated" date. Continued use of the app after changes constitutes acceptance of the revised policy.</p>
+
+        <h2>11. No VPN Service Provided</h2>
+        <p>V2Link is a client application only. We do not sell, provide, or operate VPN or proxy services. Users are responsible for acquiring or setting up their own servers and must comply with applicable laws in their jurisdiction.</p>
+
+        <h2>12. Contact</h2>
+        <p>If you have questions about this Privacy Policy, you can reach us at:</p>
+        <ul>
+            <li>Telegram: <a href="https://t.me/v2link_support">@v2link_support</a></li>
+        </ul>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <span class="footer-text">&copy; 2026 V2Link. All rights reserved.</span>
+            <ul class="footer-links">
+                <li><a href="/privacy-policy/">Privacy Policy</a></li>
+                <li><a href="/terms-of-service/">Terms of Service</a></li>
+                <li><a href="https://t.me/v2link_support" target="_blank">Support</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

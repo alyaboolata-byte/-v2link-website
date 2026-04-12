@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V2Link — Terms of Service</title>
+    <meta name="description" content="V2Link Terms of Service. Read the terms and conditions for using the V2Link proxy client application.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-void: #050508;
+            --bg-deep: #0A0A0F;
+            --bg-card: #12121A;
+            --bg-surface: #1E1E2A;
+            --accent: #4A90D9;
+            --accent-glow: rgba(74, 144, 217, 0.4);
+            --accent-soft: rgba(74, 144, 217, 0.12);
+            --teal: #34C6B4;
+            --text-primary: #F0F0F5;
+            --text-secondary: #9898A6;
+            --text-muted: #5A5A6E;
+            --border: rgba(255,255,255,0.06);
+            --border-glow: rgba(74, 144, 217, 0.2);
+            --glass: rgba(18, 18, 26, 0.7);
+            --glass-border: rgba(255,255,255,0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { -webkit-font-smoothing: antialiased; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+        .ambient {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+        }
+        .ambient-orb {
+            position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.1;
+        }
+        .ambient-orb:nth-child(1) {
+            width: 500px; height: 500px; background: var(--accent); top: -100px; right: -100px;
+        }
+        .ambient-orb:nth-child(2) {
+            width: 400px; height: 400px; background: var(--teal); bottom: -100px; left: -100px;
+        }
+        .nav {
+            padding: 16px 0;
+            background: rgba(5, 5, 8, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-inner {
+            max-width: 800px; margin: 0 auto; padding: 0 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex; align-items: center; gap: 10px; text-decoration: none;
+        }
+        .nav-logo-icon {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, var(--accent), var(--teal));
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 12px; color: #fff;
+        }
+        .nav-logo-text {
+            font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 16px;
+            color: var(--text-primary); letter-spacing: 2px;
+        }
+        .nav-back {
+            color: var(--text-muted); text-decoration: none; font-size: 14px;
+            transition: color 0.2s;
+        }
+        .nav-back:hover { color: var(--accent); }
+        .content {
+            max-width: 800px; margin: 0 auto; padding: 60px 24px 80px;
+            position: relative; z-index: 1;
+        }
+        .page-label {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px; font-weight: 500; color: var(--accent);
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+        }
+        .page-label::before {
+            content: ''; width: 20px; height: 1px; background: var(--accent);
+        }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px; font-weight: 700; margin-bottom: 8px;
+        }
+        .updated { font-size: 14px; color: var(--text-muted); margin-bottom: 48px; }
+        .intro { font-size: 17px; color: var(--text-secondary); margin-bottom: 32px; }
+        .highlight {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-left: 3px solid var(--accent);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin: 32px 0;
+        }
+        .highlight p { margin: 0; color: #aac8e8; font-size: 15px; }
+        .highlight strong { color: var(--text-primary); }
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px; font-weight: 600; color: var(--accent);
+            margin-top: 48px; margin-bottom: 16px; letter-spacing: 0.5px;
+        }
+        p { margin-bottom: 16px; color: var(--text-secondary); font-size: 15px; line-height: 1.8; }
+        ul { margin-bottom: 16px; padding-left: 0; list-style: none; }
+        li {
+            padding: 8px 0 8px 28px; color: var(--text-secondary); font-size: 15px;
+            position: relative; line-height: 1.6;
+        }
+        li::before {
+            content: '';
+            position: absolute; left: 8px; top: 16px;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--accent); box-shadow: 0 0 6px var(--accent-glow);
+        }
+        li strong { color: var(--text-primary); }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 0; position: relative; z-index: 1;
+        }
+        .footer-inner {
+            max-width: 800px; margin: 0 auto; padding: 0 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .footer-text { font-size: 13px; color: var(--text-muted); }
+        .footer-links { display: flex; gap: 20px; list-style: none; }
+        .footer-links a { color: var(--text-muted); font-size: 13px; text-decoration: none; }
+        .footer-links a:hover { color: var(--accent); }
+        @media (max-width: 600px) {
+            h1 { font-size: 28px; }
+            .content { padding: 40px 20px 60px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient">
+        <div class="ambient-orb"></div>
+        <div class="ambient-orb"></div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">
+                <div class="nav-logo-icon">V2</div>
+                <span class="nav-logo-text">V2LINK</span>
+            </a>
+            <a href="/" class="nav-back">&larr; Back to Home</a>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div class="page-label">Legal</div>
+        <h1>Terms of Service</h1>
+        <p class="updated">Last updated: April 12, 2026</p>
+
+        <p class="intro">Please read these Terms of Service ("Terms") carefully before using the V2Link application ("the app", "we", "our").</p>
+
+        <h2>1. Acceptance of Terms</h2>
+        <p>By downloading, installing, or using V2Link, you agree to be bound by these Terms. If you do not agree, do not use the app.</p>
+
+        <h2>2. Description of Service</h2>
+        <p>V2Link is a proxy client application that allows users to connect to proxy and VPN servers. The app provides tools for configuring and managing proxy connections using various protocols including VLESS, VMess, Trojan, Shadowsocks, SOCKS, and HTTP.</p>
+
+        <div class="highlight">
+            <p><strong>Important:</strong> V2Link does not sell, provide, or operate any VPN or proxy services. We do not own or manage any servers. The app is a client tool only.</p>
+        </div>
+
+        <h2>3. User Responsibilities</h2>
+        <p>You are solely responsible for:</p>
+        <ul>
+            <li>Acquiring or setting up your own proxy/VPN servers</li>
+            <li>The legality of your use of the app in your jurisdiction</li>
+            <li>Complying with all applicable local, national, and international laws</li>
+            <li>The content you access through proxy connections</li>
+            <li>Maintaining the security of your server configurations and subscription URLs</li>
+        </ul>
+
+        <h2>4. Prohibited Uses</h2>
+        <p>You agree not to use V2Link to:</p>
+        <ul>
+            <li>Violate any applicable laws or regulations</li>
+            <li>Engage in any illegal or unauthorized activity</li>
+            <li>Infringe on the rights of others</li>
+            <li>Distribute malware or engage in malicious network activity</li>
+            <li>Attempt to reverse engineer, decompile, or disassemble the app</li>
+        </ul>
+
+        <h2>5. No Warranty</h2>
+        <p>V2Link is provided "as is" and "as available" without any warranties of any kind, express or implied. We do not guarantee that:</p>
+        <ul>
+            <li>The app will be uninterrupted, error-free, or secure</li>
+            <li>Any particular server or protocol will function correctly</li>
+            <li>The app will meet your specific requirements</li>
+            <li>Connection speeds or reliability will meet any particular standard</li>
+        </ul>
+
+        <h2>6. Limitation of Liability</h2>
+        <p>To the maximum extent permitted by law, we shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the app, including but not limited to:</p>
+        <ul>
+            <li>Loss of data or configurations</li>
+            <li>Connection failures or interruptions</li>
+            <li>Unauthorized access to your servers due to misconfiguration</li>
+            <li>Any actions taken by third-party server providers</li>
+        </ul>
+
+        <h2>7. Intellectual Property</h2>
+        <p>The V2Link app, including its design, code, and branding, is protected by intellectual property laws. You may not copy, modify, distribute, or create derivative works based on the app without our explicit permission.</p>
+
+        <h2>8. Third-Party Services</h2>
+        <p>V2Link connects to servers and services provided by third parties (your subscription providers). We are not responsible for the availability, reliability, privacy practices, or content of any third-party services.</p>
+
+        <h2>9. App Store Terms</h2>
+        <p>Your use of V2Link is also subject to the Apple Media Services Terms and Conditions, including the Licensed Application End User License Agreement ("EULA") available at <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">apple.com/legal</a>.</p>
+
+        <h2>10. Termination</h2>
+        <p>We reserve the right to terminate or restrict access to the app at any time, without notice, for any reason. You may stop using the app at any time by deleting it from your device.</p>
+
+        <h2>11. Changes to Terms</h2>
+        <p>We may update these Terms from time to time. Changes will be reflected on this page with an updated date. Continued use of the app after changes constitutes acceptance of the revised Terms.</p>
+
+        <h2>12. Governing Law</h2>
+        <p>These Terms shall be governed by and construed in accordance with applicable laws, without regard to conflict of law principles.</p>
+
+        <h2>13. Contact</h2>
+        <p>If you have questions about these Terms, you can reach us at:</p>
+        <ul>
+            <li>Telegram: <a href="https://t.me/v2link_support">@v2link_support</a></li>
+        </ul>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <span class="footer-text">&copy; 2026 V2Link. All rights reserved.</span>
+            <ul class="footer-links">
+                <li><a href="/privacy-policy/">Privacy Policy</a></li>
+                <li><a href="/terms-of-service/">Terms of Service</a></li>
+                <li><a href="https://t.me/v2link_support" target="_blank">Support</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

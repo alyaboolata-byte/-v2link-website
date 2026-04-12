@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V2Link — Advanced Proxy Client for iOS & Android</title>
+    <meta name="description" content="V2Link is a powerful proxy client for iOS and Android supporting VLESS, VMess, Trojan, Shadowsocks and more. Smart Routing, Anti-DPI, Kill Switch. Your privacy, your rules.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           V2Link — Cyberpunk Dark OLED Design System
+           ═══════════════════════════════════════════ */
+
+        :root {
+            --bg-void: #050508;
+            --bg-deep: #0A0A0F;
+            --bg-card: #12121A;
+            --bg-card-hover: #1A1A25;
+            --bg-surface: #1E1E2A;
+            --accent: #4A90D9;
+            --accent-glow: rgba(74, 144, 217, 0.4);
+            --accent-soft: rgba(74, 144, 217, 0.12);
+            --teal: #34C6B4;
+            --teal-glow: rgba(52, 198, 180, 0.35);
+            --purple: #8B5CF6;
+            --purple-glow: rgba(139, 92, 246, 0.3);
+            --text-primary: #F0F0F5;
+            --text-secondary: #9898A6;
+            --text-muted: #5A5A6E;
+            --border: rgba(255,255,255,0.06);
+            --border-glow: rgba(74, 144, 217, 0.2);
+            --glass: rgba(18, 18, 26, 0.7);
+            --glass-border: rgba(255,255,255,0.08);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --radius-lg: 24px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        /* ── Ambient Background ── */
+        .ambient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+            clip: rect(0, 100vw, 100vh, 0);
+        }
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: float 20s ease-in-out infinite;
+        }
+        .ambient-orb:nth-child(1) {
+            width: 600px; height: 600px;
+            background: var(--accent);
+            top: -200px; left: -100px;
+            animation-delay: 0s;
+        }
+        .ambient-orb:nth-child(2) {
+            width: 500px; height: 500px;
+            background: var(--teal);
+            bottom: -150px; right: -100px;
+            animation-delay: -7s;
+        }
+        .ambient-orb:nth-child(3) {
+            width: 400px; height: 400px;
+            background: var(--purple);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+            opacity: 0.08;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -40px) scale(1.05); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(40px, 30px) scale(1.02); }
+        }
+
+        /* ── Grid Pattern Overlay ── */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(74, 144, 217, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 144, 217, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* ── Container ── */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Navigation ── */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 0;
+            transition: all 0.3s ease;
+        }
+        .nav.scrolled {
+            background: rgba(5, 5, 8, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--teal));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 14px;
+            color: #fff;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .nav-logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--accent); }
+
+        .nav-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: linear-gradient(135deg, var(--accent), #3A7BC8);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px var(--accent-glow), 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .nav-cta svg { width: 16px; height: 16px; }
+
+        /* Language Toggle */
+        .lang-toggle {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-left: 8px;
+        }
+        .lang-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.5px;
+            font-family: 'Inter', sans-serif;
+        }
+        .lang-btn.active {
+            background: var(--accent);
+            color: #fff;
+        }
+        .lang-btn:hover:not(.active) { color: var(--text-primary); }
+
+        /* Nav logo icon image */
+        .nav-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        /* Store buttons */
+        .btn-store {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-appstore {
+            background: linear-gradient(135deg, var(--accent), #3A7BC8);
+            box-shadow: 0 0 30px var(--accent-glow), 0 4px 24px rgba(0,0,0,0.2);
+        }
+        .btn-appstore:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px var(--accent-glow), 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .btn-gplay {
+            background: linear-gradient(135deg, #34A853, #1E8E3E);
+            box-shadow: 0 0 30px rgba(52, 168, 83, 0.3), 0 4px 24px rgba(0,0,0,0.2);
+        }
+        .btn-gplay:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(52, 168, 83, 0.4), 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .btn-store svg { width: 20px; height: 20px; }
+        .btn-store-soon {
+            font-size: 10px;
+            font-weight: 400;
+            opacity: 0.7;
+            margin-left: -4px;
+        }
+
+        /* Mobile nav */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 8px;
+        }
+        .nav-toggle svg { width: 24px; height: 24px; }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 0 80px;
+            position: relative;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            background: var(--accent-soft);
+            border: 1px solid var(--border-glow);
+            border-radius: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+        .hero-badge-dot {
+            width: 6px; height: 6px;
+            background: var(--teal);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--teal-glow); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 8px transparent; }
+        }
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(36px, 5vw, 56px);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--accent), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-desc {
+            font-size: 18px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 40px;
+            max-width: 480px;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--accent), #3A7BC8);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px var(--accent-glow), 0 4px 24px rgba(0,0,0,0.2);
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px var(--accent-glow), 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .btn-primary svg { width: 20px; height: 20px; }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 32px;
+            background: var(--glass);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 500;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-glow);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Phone Mockup */
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .phone-mockup {
+            width: 280px;
+            height: 580px;
+            background: var(--bg-card);
+            border-radius: 44px;
+            border: 2px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 0 60px var(--accent-glow),
+                0 40px 80px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 32px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 2;
+        }
+        .phone-screen {
+            position: absolute;
+            inset: 4px;
+            border-radius: 40px;
+            background: linear-gradient(180deg, #0D1117, #0A0A0F);
+            overflow: hidden;
+            padding: 48px 20px 20px;
+        }
+        .phone-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .phone-vpn-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--accent), var(--teal));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px var(--accent-glow);
+            animation: glow-pulse 3s ease-in-out infinite;
+        }
+        @keyframes glow-pulse {
+            0%, 100% { box-shadow: 0 0 40px var(--accent-glow); }
+            50% { box-shadow: 0 0 60px var(--accent-glow), 0 0 80px rgba(52, 198, 180, 0.2); }
+        }
+        .phone-vpn-icon svg { width: 28px; height: 28px; color: #fff; }
+        .phone-label {
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--teal);
+            margin-top: 16px;
+            letter-spacing: 2px;
+        }
+        .phone-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        .phone-stat {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+        }
+        .phone-stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .phone-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .phone-servers {
+            margin-top: 16px;
+        }
+        .phone-server {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+        .phone-server-flag { font-size: 18px; }
+        .phone-server-name {
+            flex: 1;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .phone-server-ping {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--teal);
+        }
+        .phone-glow-ring {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            border: 1px solid var(--accent-glow);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0.3;
+            animation: ring-expand 4s ease-out infinite;
+        }
+        .phone-glow-ring:nth-child(2) { animation-delay: -1.3s; width: 500px; height: 500px; }
+        .phone-glow-ring:nth-child(3) { animation-delay: -2.6s; width: 600px; height: 600px; opacity: 0.15; }
+        @keyframes ring-expand {
+            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.4; }
+            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+        }
+
+        /* ── Section Styling ── */
+        section {
+            padding: 100px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .section-label::before {
+            content: '';
+            width: 20px;
+            height: 1px;
+            background: var(--accent);
+        }
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(28px, 4vw, 42px);
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        .section-desc {
+            font-size: 17px;
+            color: var(--text-secondary);
+            max-width: 560px;
+            line-height: 1.7;
+        }
+        .section-header {
+            margin-bottom: 64px;
+        }
+        .section-header-center {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+        .section-header-center .section-desc {
+            margin: 0 auto;
+        }
+
+        /* ── Features Grid ── */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .feature-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 32px 28px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .feature-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 40px var(--accent-soft);
+        }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .feature-icon svg { width: 22px; height: 22px; }
+        .feature-icon.blue {
+            background: var(--accent-soft);
+            color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-soft);
+        }
+        .feature-icon.teal {
+            background: rgba(52, 198, 180, 0.12);
+            color: var(--teal);
+            box-shadow: 0 0 20px rgba(52, 198, 180, 0.1);
+        }
+        .feature-icon.purple {
+            background: rgba(139, 92, 246, 0.12);
+            color: var(--purple);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+        }
+        .feature-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+        .feature-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ── Protocols Section ── */
+        .protocols-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+        }
+        .protocol-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 28px 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .protocol-card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .protocol-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .protocol-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .protocol-line {
+            width: 30px;
+            height: 2px;
+            margin: 12px auto 0;
+            border-radius: 1px;
+        }
+        .protocol-line.blue { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+        .protocol-line.teal { background: var(--teal); box-shadow: 0 0 8px var(--teal-glow); }
+        .protocol-line.purple { background: var(--purple); box-shadow: 0 0 8px var(--purple-glow); }
+
+        /* ── Privacy Section ── */
+        .privacy-section {
+            background: linear-gradient(180deg, transparent, rgba(74, 144, 217, 0.03), transparent);
+        }
+        .privacy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .privacy-visual {
+            position: relative;
+        }
+        .privacy-shield {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .shield-icon {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .shield-icon svg {
+            width: 80px;
+            height: 80px;
+            color: var(--accent);
+            filter: drop-shadow(0 0 30px var(--accent-glow));
+        }
+        .shield-ring {
+            position: absolute;
+            border: 1px solid var(--accent-soft);
+            border-radius: 50%;
+            animation: shield-rotate 20s linear infinite;
+        }
+        .shield-ring:nth-child(1) { inset: -20px; border-style: dashed; }
+        .shield-ring:nth-child(2) { inset: -50px; opacity: 0.5; animation-direction: reverse; }
+        .shield-ring:nth-child(3) { inset: -80px; opacity: 0.3; border-style: dotted; }
+        @keyframes shield-rotate { 100% { transform: rotate(360deg); } }
+
+        .privacy-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .privacy-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            transition: all 0.3s;
+        }
+        .privacy-item:hover {
+            border-color: var(--border-glow);
+            background: var(--bg-card-hover);
+        }
+        .privacy-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            background: rgba(52, 198, 180, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .privacy-check svg { width: 12px; height: 12px; color: var(--teal); }
+        .privacy-item-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .privacy-item-text strong { color: var(--text-primary); }
+
+        /* ── Stats Bar ── */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 60px 0;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 32px 20px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+        }
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* ── CTA Section ── */
+        .cta-section {
+            text-align: center;
+            padding: 120px 0;
+        }
+        .cta-box {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+        }
+        .cta-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+        .cta-box::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--teal-glow), transparent);
+        }
+        .cta-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .cta-desc {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+        }
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+        }
+        .footer-copy {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--accent); }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .protocols-grid { grid-template-columns: repeat(3, 1fr); }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .hero {
+                padding: 100px 0 60px;
+                min-height: auto;
+            }
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 40px;
+            }
+            .hero h1 {
+                font-size: 28px !important;
+                letter-spacing: -1px;
+            }
+            .hero-desc {
+                margin: 0 auto 32px;
+                font-size: 15px;
+                text-align: center;
+            }
+            .hero-actions {
+                justify-content: center;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .hero-visual { margin-top: 0; }
+
+            /* Mobile Nav */
+            .nav { padding: 12px 0; }
+            .nav-links { display: none; }
+            .nav-toggle { display: block; }
+            .nav-links.open {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(5, 5, 8, 0.97);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                padding: 20px 24px;
+                border-bottom: 1px solid var(--border);
+                gap: 12px;
+                align-items: stretch;
+            }
+            .nav-links.open li { text-align: center; }
+            .nav-links.open .lang-toggle { justify-content: center; }
+            .nav-links.open .nav-cta {
+                justify-content: center;
+                text-align: center;
+            }
+
+            /* Mobile lang toggle next to burger */
+            .nav-mobile-lang {
+                display: flex !important;
+            }
+            .nav-logo-text { font-size: 16px; letter-spacing: 1px; }
+            .container { padding: 0 20px; }
+
+            /* Prevent horizontal overflow */
+            .hero-badge {
+                max-width: 100%;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .hero h1 {
+                word-break: break-word;
+                overflow-wrap: break-word;
+            }
+
+            .features-grid { grid-template-columns: 1fr; }
+            .feature-card { padding: 24px 20px; }
+            .protocols-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .protocol-card { padding: 20px 12px; }
+            .privacy-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .privacy-visual { order: -1; }
+            .privacy-shield { width: 150px; height: 150px; }
+            .shield-icon { width: 150px; height: 150px; }
+            .shield-icon svg { width: 60px; height: 60px; }
+            .stats-bar {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                padding: 40px 0;
+            }
+            .stat-item { padding: 24px 16px; }
+            .stat-value { font-size: 28px; }
+
+            /* CTA mobile */
+            .cta-section { padding: 80px 0; }
+            .cta-box { padding: 40px 24px; }
+            .cta-title { font-size: 24px !important; }
+            .cta-desc { font-size: 15px; }
+
+            /* Store buttons mobile */
+            .btn-store {
+                justify-content: center;
+                width: 100%;
+                padding: 14px 24px;
+                font-size: 15px;
+            }
+
+            /* Section spacing */
+            section { padding: 60px 0; }
+            .section-header-center { margin-bottom: 40px; }
+            .section-title { font-size: 26px !important; }
+            .section-desc { font-size: 15px; }
+
+            .footer-inner {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+            .footer-links { justify-content: center; flex-wrap: wrap; }
+
+            .phone-mockup {
+                width: 220px;
+                height: 460px;
+                border-radius: 36px;
+            }
+            .phone-screen {
+                border-radius: 32px;
+                padding: 40px 16px 16px;
+            }
+            .phone-notch { width: 100px; height: 28px; border-radius: 0 0 16px 16px; }
+            .phone-vpn-icon { width: 48px; height: 48px; }
+            .phone-vpn-icon svg { width: 22px; height: 22px; }
+            .phone-label { font-size: 12px; margin-top: 12px; }
+            .phone-stats { gap: 6px; margin-top: 14px; }
+            .phone-stat { padding: 8px; border-radius: 10px; }
+            .phone-stat-value { font-size: 13px; }
+            .phone-stat-label { font-size: 8px; }
+            .phone-server { padding: 8px 10px; margin-bottom: 4px; border-radius: 8px; }
+            .phone-server-flag { font-size: 14px; }
+            .phone-server-name { font-size: 11px; }
+            .phone-server-ping { font-size: 10px; }
+            .phone-glow-ring { display: none; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 26px !important; }
+            .hero-badge { font-size: 9px; padding: 5px 10px; letter-spacing: 0.5px; }
+            .hero-desc { font-size: 14px; }
+            .protocols-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .protocol-name { font-size: 13px; }
+            .protocol-desc { font-size: 11px; }
+            .stats-bar { grid-template-columns: 1fr 1fr; }
+            .stat-value { font-size: 24px; }
+            .stat-label { font-size: 12px; }
+            .privacy-item { padding: 12px 16px; }
+            .privacy-item-text { font-size: 14px; }
+            .nav-logo-img { width: 32px; height: 32px; }
+            .nav-logo-text { font-size: 17px; }
+        }
+        @media (max-width: 380px) {
+            .container { padding: 0 16px; }
+            .hero h1 { font-size: 26px !important; }
+            .cta-title { font-size: 20px !important; }
+            .section-title { font-size: 22px !important; }
+            .nav-logo-text { font-size: 14px; }
+            .lang-btn { padding: 5px 10px; font-size: 11px; }
+        }
+
+        /* ── Scroll Animations ── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Background -->
+    <div class="ambient">
+        <div class="ambient-orb"></div>
+        <div class="ambient-orb"></div>
+        <div class="ambient-orb"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <div class="container">
+            <div class="nav-inner">
+                <a href="#" class="nav-logo">
+                    <img src="icon.png" alt="V2Link" class="nav-logo-img">
+                    <span class="nav-logo-text">V2LINK</span>
+                </a>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="lang-toggle nav-mobile-lang" style="display: none;">
+                        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+                        <button class="lang-btn" onclick="setLang('ru')">RU</button>
+                    </div>
+                    <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')" aria-label="Toggle menu">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                    </button>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#features" data-i18n="nav_features">Features</a></li>
+                    <li><a href="#protocols" data-i18n="nav_protocols">Protocols</a></li>
+                    <li><a href="#privacy" data-i18n="nav_privacy">Privacy</a></li>
+                    <li>
+                        <div class="lang-toggle">
+                            <button class="lang-btn active" onclick="setLang('en')">EN</button>
+                            <button class="lang-btn" onclick="setLang('ru')">RU</button>
+                        </div>
+                    </li>
+                    <li><a href="#download" class="nav-cta" data-i18n="nav_download">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                        Download
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <span class="hero-badge-dot"></span>
+                        <span data-i18n="hero_badge">iOS & Android Proxy Client</span>
+                    </div>
+                    <h1>
+                        <span data-i18n="hero_title_1">Your Network.</span><br>
+                        <span class="gradient" data-i18n="hero_title_2">Your Rules.</span>
+                    </h1>
+                    <p class="hero-desc" data-i18n="hero_desc">
+                        Advanced proxy client for iOS and Android with 6 protocols, Smart Routing, Anti-DPI bypass, and zero data collection. Connect to your servers with military-grade encryption.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#download" class="btn-store btn-appstore">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                            <span data-i18n="btn_appstore">App Store</span>
+                        </a>
+                        <a href="#download" class="btn-store btn-gplay">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.832l2.559 1.478a1 1 0 0 1 0 1.735l-2.559 1.478L14.95 12l2.748-2.125zM5.864 3.467L16.8 9.8l-2.302 2.302-8.634-8.635z"/></svg>
+                            <span data-i18n="btn_gplay">Google Play</span>
+                            <span class="btn-store-soon" data-i18n="btn_soon">(soon)</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="phone-glow-ring"></div>
+                    <div class="phone-glow-ring"></div>
+                    <div class="phone-glow-ring"></div>
+                    <div class="phone-mockup">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="phone-status">
+                                <div class="phone-vpn-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                </div>
+                            </div>
+                            <div class="phone-label">CONNECTED</div>
+                            <div class="phone-stats">
+                                <div class="phone-stat">
+                                    <div class="phone-stat-value">2.4 GB</div>
+                                    <div class="phone-stat-label">Download</div>
+                                </div>
+                                <div class="phone-stat">
+                                    <div class="phone-stat-value">842 MB</div>
+                                    <div class="phone-stat-label">Upload</div>
+                                </div>
+                                <div class="phone-stat">
+                                    <div class="phone-stat-value">24 ms</div>
+                                    <div class="phone-stat-label">Latency</div>
+                                </div>
+                                <div class="phone-stat">
+                                    <div class="phone-stat-value">4:32</div>
+                                    <div class="phone-stat-label">Duration</div>
+                                </div>
+                            </div>
+                            <div class="phone-servers">
+                                <div class="phone-server">
+                                    <span class="phone-server-flag">🇩🇪</span>
+                                    <span class="phone-server-name">Frankfurt #1</span>
+                                    <span class="phone-server-ping">24ms</span>
+                                </div>
+                                <div class="phone-server">
+                                    <span class="phone-server-flag">🇳🇱</span>
+                                    <span class="phone-server-name">Amsterdam #3</span>
+                                    <span class="phone-server-ping">31ms</span>
+                                </div>
+                                <div class="phone-server">
+                                    <span class="phone-server-flag">🇫🇮</span>
+                                    <span class="phone-server-name">Helsinki #2</span>
+                                    <span class="phone-server-ping">48ms</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <div class="container">
+        <div class="stats-bar">
+            <div class="stat-item reveal">
+                <div class="stat-value">6</div>
+                <div class="stat-label" data-i18n="stat_protocols">Protocols Supported</div>
+            </div>
+            <div class="stat-item reveal reveal-delay-1">
+                <div class="stat-value">0</div>
+                <div class="stat-label" data-i18n="stat_data">Data Collected</div>
+            </div>
+            <div class="stat-item reveal reveal-delay-2">
+                <div class="stat-value">6</div>
+                <div class="stat-label" data-i18n="stat_languages">Languages</div>
+            </div>
+            <div class="stat-item reveal reveal-delay-3">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label" data-i18n="stat_killswitch">Kill Switch Active</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section id="features">
+        <div class="container">
+            <div class="section-header-center">
+                <div class="section-label" data-i18n="feat_label">Capabilities</div>
+                <h2 class="section-title" data-i18n="feat_title" data-i18n-html="true">Engineered for<br>Performance & Privacy</h2>
+                <p class="section-desc" data-i18n="feat_desc">Every feature built with one goal: give you complete control over your network without compromising speed or security.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <div class="feature-icon blue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4"/></svg>
+                    </div>
+                    <h3 class="feature-title" data-i18n="f1_title">Smart Routing</h3>
+                    <p class="feature-text" data-i18n="f1_text">Intelligent traffic splitting. Local sites go direct, everything else through proxy. Optimized for speed with 70+ preset domain rules.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-1">
+                    <div class="feature-icon teal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3 class="feature-title" data-i18n="f2_title">Kill Switch</h3>
+                    <p class="feature-text" data-i18n="f2_text">Network lock ensures zero data leaks. If VPN drops, all traffic stops. Your real IP stays hidden no matter what.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-2">
+                    <div class="feature-icon purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                    </div>
+                    <h3 class="feature-title" data-i18n="f3_title">Anti-DPI Bypass</h3>
+                    <p class="feature-text" data-i18n="f3_text">Advanced obfuscation with TLS fragment, multiplexing, and padding. Bypass deep packet inspection seamlessly.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-1">
+                    <div class="feature-icon teal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <h3 class="feature-title" data-i18n="f4_title">Subscription Manager</h3>
+                    <p class="feature-text" data-i18n="f4_text">Import servers via URL or QR code. Auto-update server lists. Manage multiple subscriptions with collapsible groups.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-2">
+                    <div class="feature-icon blue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <h3 class="feature-title" data-i18n="f5_title">Auto-Reconnect</h3>
+                    <p class="feature-text" data-i18n="f5_text">Exponential backoff with automatic server fallback. Seamless transitions between WiFi and cellular networks.</p>
+                </div>
+                <div class="feature-card reveal reveal-delay-3">
+                    <div class="feature-icon purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    </div>
+                    <h3 class="feature-title" data-i18n="f6_title">Zero Data Collection</h3>
+                    <p class="feature-text" data-i18n="f6_text">No analytics. No tracking. No logs. No crash reports. Everything stays on your device. Period.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Protocols Section -->
+    <section id="protocols">
+        <div class="container">
+            <div class="section-header-center">
+                <div class="section-label" data-i18n="proto_label">Protocols</div>
+                <h2 class="section-title" data-i18n="proto_title" data-i18n-html="true">Six Protocols.<br>One Client.</h2>
+                <p class="section-desc" data-i18n="proto_desc">Full support for modern proxy protocols with REALITY, xHTTP transport, and advanced encryption.</p>
+            </div>
+            <div class="protocols-grid">
+                <div class="protocol-card reveal">
+                    <div class="protocol-name">VLESS</div>
+                    <div class="protocol-desc" data-i18n="p1_desc">Lightweight & fast with REALITY support</div>
+                    <div class="protocol-line blue"></div>
+                </div>
+                <div class="protocol-card reveal reveal-delay-1">
+                    <div class="protocol-name">VMess</div>
+                    <div class="protocol-desc" data-i18n="p2_desc">Encrypted with auto UUID authentication</div>
+                    <div class="protocol-line blue"></div>
+                </div>
+                <div class="protocol-card reveal reveal-delay-2">
+                    <div class="protocol-name">Trojan</div>
+                    <div class="protocol-desc" data-i18n="p3_desc">TLS-based stealth protocol</div>
+                    <div class="protocol-line teal"></div>
+                </div>
+                <div class="protocol-card reveal reveal-delay-3">
+                    <div class="protocol-name">Shadowsocks</div>
+                    <div class="protocol-desc" data-i18n="p4_desc">Classic encrypted proxy with AEAD</div>
+                    <div class="protocol-line teal"></div>
+                </div>
+                <div class="protocol-card reveal reveal-delay-4">
+                    <div class="protocol-name">SOCKS5</div>
+                    <div class="protocol-desc" data-i18n="p5_desc">Universal proxy standard</div>
+                    <div class="protocol-line purple"></div>
+                </div>
+                <div class="protocol-card reveal reveal-delay-5">
+                    <div class="protocol-name">HTTP</div>
+                    <div class="protocol-desc" data-i18n="p6_desc">Simple HTTP/HTTPS proxy</div>
+                    <div class="protocol-line purple"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Privacy Section -->
+    <section id="privacy" class="privacy-section">
+        <div class="container">
+            <div class="privacy-grid">
+                <div class="privacy-visual reveal">
+                    <div class="privacy-shield">
+                        <div class="shield-icon">
+                            <div class="shield-ring"></div>
+                            <div class="shield-ring"></div>
+                            <div class="shield-ring"></div>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="reveal reveal-delay-1">
+                    <div class="section-label" data-i18n="priv_label">Privacy First</div>
+                    <h2 class="section-title" data-i18n="priv_title" data-i18n-html="true">Your Data Stays<br>On Your Device</h2>
+                    <p class="section-desc" style="margin-bottom: 32px;" data-i18n="priv_desc">V2Link is a client tool. We don't run servers, we don't see your traffic, and we don't collect anything.</p>
+                    <ul class="privacy-list">
+                        <li class="privacy-item">
+                            <div class="privacy-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+                            <span class="privacy-item-text" data-i18n="priv_1" data-i18n-html="true"><strong>No analytics or telemetry</strong> — zero third-party SDKs</span>
+                        </li>
+                        <li class="privacy-item">
+                            <div class="privacy-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+                            <span class="privacy-item-text" data-i18n="priv_2" data-i18n-html="true"><strong>No connection logs</strong> — we can't see what you do</span>
+                        </li>
+                        <li class="privacy-item">
+                            <div class="privacy-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+                            <span class="privacy-item-text" data-i18n="priv_3" data-i18n-html="true"><strong>No IP tracking</strong> — your identity stays yours</span>
+                        </li>
+                        <li class="privacy-item">
+                            <div class="privacy-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>
+                            <span class="privacy-item-text" data-i18n="priv_4" data-i18n-html="true"><strong>Local-only storage</strong> — configs deleted with the app</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="download">
+        <div class="container">
+            <div class="cta-box reveal">
+                <h2 class="cta-title" data-i18n="cta_title" data-i18n-html="true">Take Control of<br>Your Connection</h2>
+                <p class="cta-desc" data-i18n="cta_desc" data-i18n-html="true">Free to download. No account needed. No data collected.<br>Just connect and go.</p>
+                <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                    <a href="#" class="btn-store btn-appstore" style="font-size: 17px; padding: 16px 36px;">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                        <span data-i18n="btn_appstore">App Store</span>
+                    </a>
+                    <a href="#" class="btn-store btn-gplay" style="font-size: 17px; padding: 16px 36px;">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-1.832l2.559 1.478a1 1 0 0 1 0 1.735l-2.559 1.478L14.95 12l2.748-2.125zM5.864 3.467L16.8 9.8l-2.302 2.302-8.634-8.635z"/></svg>
+                        <span data-i18n="btn_gplay">Google Play</span>
+                        <span class="btn-store-soon" data-i18n="btn_soon">(soon)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-left">
+                    <span class="footer-logo">V2LINK</span>
+                    <span class="footer-copy">&copy; 2026 V2Link. All rights reserved.</span>
+                </div>
+                <ul class="footer-links">
+                    <li><a href="/privacy-policy/">Privacy Policy</a></li>
+                    <li><a href="/terms-of-service/">Terms of Service</a></li>
+                    <li><a href="https://t.me/v2link_support" target="_blank">Telegram Support</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Nav scroll effect
+        const nav = document.getElementById('nav');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 40);
+        });
+
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // ── i18n (static site, all translations are hardcoded — no user input, safe to use innerHTML for <br> and <strong> tags) ──
+        const translations = {
+            en: {
+                nav_features: 'Features', nav_protocols: 'Protocols', nav_privacy: 'Privacy', nav_download: 'Download',
+                hero_badge: 'iOS & Android Proxy Client',
+                hero_title_1: 'Your Network.', hero_title_2: 'Your Rules.',
+                hero_desc: 'Advanced proxy client for iOS and Android with 6 protocols, Smart Routing, Anti-DPI bypass, and zero data collection. Connect to your servers with military-grade encryption.',
+                btn_appstore: 'App Store', btn_gplay: 'Google Play', btn_soon: '(soon)',
+                stat_protocols: 'Protocols Supported', stat_data: 'Data Collected', stat_languages: 'Languages', stat_killswitch: 'Kill Switch Active',
+                feat_label: 'Capabilities', feat_title: 'Engineered for<br>Performance & Privacy',
+                feat_desc: 'Every feature built with one goal: give you complete control over your network without compromising speed or security.',
+                f1_title: 'Smart Routing', f1_text: 'Intelligent traffic splitting. Local sites go direct, everything else through proxy. Optimized for speed with 70+ preset domain rules.',
+                f2_title: 'Kill Switch', f2_text: 'Network lock ensures zero data leaks. If VPN drops, all traffic stops. Your real IP stays hidden no matter what.',
+                f3_title: 'Anti-DPI Bypass', f3_text: 'Advanced obfuscation with TLS fragment, multiplexing, and padding. Bypass deep packet inspection seamlessly.',
+                f4_title: 'Subscription Manager', f4_text: 'Import servers via URL or QR code. Auto-update server lists. Manage multiple subscriptions with collapsible groups.',
+                f5_title: 'Auto-Reconnect', f5_text: 'Exponential backoff with automatic server fallback. Seamless transitions between WiFi and cellular networks.',
+                f6_title: 'Zero Data Collection', f6_text: 'No analytics. No tracking. No logs. No crash reports. Everything stays on your device. Period.',
+                proto_label: 'Protocols', proto_title: 'Six Protocols.<br>One Client.',
+                proto_desc: 'Full support for modern proxy protocols with REALITY, xHTTP transport, and advanced encryption.',
+                p1_desc: 'Lightweight & fast with REALITY support', p2_desc: 'Encrypted with auto UUID authentication',
+                p3_desc: 'TLS-based stealth protocol', p4_desc: 'Classic encrypted proxy with AEAD',
+                p5_desc: 'Universal proxy standard', p6_desc: 'Simple HTTP/HTTPS proxy',
+                priv_label: 'Privacy First', priv_title: 'Your Data Stays<br>On Your Device',
+                priv_desc: "V2Link is a client tool. We don't run servers, we don't see your traffic, and we don't collect anything.",
+                priv_1: '<strong>No analytics or telemetry</strong> \u2014 zero third-party SDKs',
+                priv_2: "<strong>No connection logs</strong> \u2014 we can't see what you do",
+                priv_3: '<strong>No IP tracking</strong> \u2014 your identity stays yours',
+                priv_4: '<strong>Local-only storage</strong> \u2014 configs deleted with the app',
+                cta_title: 'Take Control of<br>Your Connection',
+                cta_desc: 'Free to download. No account needed. No data collected.<br>Just connect and go.',
+            },
+            ru: {
+                nav_features: '\u0424\u0443\u043d\u043a\u0446\u0438\u0438', nav_protocols: '\u041f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u044b', nav_privacy: '\u041f\u0440\u0438\u0432\u0430\u0442\u043d\u043e\u0441\u0442\u044c', nav_download: '\u0421\u043a\u0430\u0447\u0430\u0442\u044c',
+                hero_badge: '\u041f\u0440\u043e\u043a\u0441\u0438-\u043a\u043b\u0438\u0435\u043d\u0442 \u0434\u043b\u044f iOS \u0438 Android',
+                hero_title_1: '\u0412\u0430\u0448\u0430 \u0441\u0435\u0442\u044c.', hero_title_2: '\u0412\u0430\u0448\u0438 \u043f\u0440\u0430\u0432\u0438\u043b\u0430.',
+                hero_desc: '\u041f\u0440\u043e\u0434\u0432\u0438\u043d\u0443\u0442\u044b\u0439 \u043f\u0440\u043e\u043a\u0441\u0438-\u043a\u043b\u0438\u0435\u043d\u0442 \u0434\u043b\u044f iOS \u0438 Android \u0441 6 \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u0430\u043c\u0438, \u0443\u043c\u043d\u043e\u0439 \u043c\u0430\u0440\u0448\u0440\u0443\u0442\u0438\u0437\u0430\u0446\u0438\u0435\u0439, \u043e\u0431\u0445\u043e\u0434\u043e\u043c DPI \u0438 \u043d\u0443\u043b\u0435\u0432\u044b\u043c \u0441\u0431\u043e\u0440\u043e\u043c \u0434\u0430\u043d\u043d\u044b\u0445. \u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u0439\u0442\u0435\u0441\u044c \u043a \u0441\u0432\u043e\u0438\u043c \u0441\u0435\u0440\u0432\u0435\u0440\u0430\u043c \u0441 \u043d\u0430\u0434\u0451\u0436\u043d\u044b\u043c \u0448\u0438\u0444\u0440\u043e\u0432\u0430\u043d\u0438\u0435\u043c.',
+                btn_appstore: 'App Store', btn_gplay: 'Google Play', btn_soon: '(\u0441\u043a\u043e\u0440\u043e)',
+                stat_protocols: '\u041f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u043e\u0432', stat_data: '\u0421\u0431\u043e\u0440 \u0434\u0430\u043d\u043d\u044b\u0445', stat_languages: '\u042f\u0437\u044b\u043a\u043e\u0432', stat_killswitch: 'Kill Switch \u0430\u043a\u0442\u0438\u0432\u0435\u043d',
+                feat_label: '\u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u0438', feat_title: '\u0421\u043e\u0437\u0434\u0430\u043d\u043e \u0434\u043b\u044f<br>\u0441\u043a\u043e\u0440\u043e\u0441\u0442\u0438 \u0438 \u043f\u0440\u0438\u0432\u0430\u0442\u043d\u043e\u0441\u0442\u0438',
+                feat_desc: '\u041a\u0430\u0436\u0434\u0430\u044f \u0444\u0443\u043d\u043a\u0446\u0438\u044f \u0441\u043e\u0437\u0434\u0430\u043d\u0430 \u0441 \u043e\u0434\u043d\u043e\u0439 \u0446\u0435\u043b\u044c\u044e: \u0434\u0430\u0442\u044c \u0432\u0430\u043c \u043f\u043e\u043b\u043d\u044b\u0439 \u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044c \u043d\u0430\u0434 \u0441\u0435\u0442\u044c\u044e \u0431\u0435\u0437 \u043a\u043e\u043c\u043f\u0440\u043e\u043c\u0438\u0441\u0441\u043e\u0432.',
+                f1_title: '\u0423\u043c\u043d\u0430\u044f \u043c\u0430\u0440\u0448\u0440\u0443\u0442\u0438\u0437\u0430\u0446\u0438\u044f', f1_text: '\u0418\u043d\u0442\u0435\u043b\u043b\u0435\u043a\u0442\u0443\u0430\u043b\u044c\u043d\u043e\u0435 \u0440\u0430\u0437\u0434\u0435\u043b\u0435\u043d\u0438\u0435 \u0442\u0440\u0430\u0444\u0438\u043a\u0430. \u041b\u043e\u043a\u0430\u043b\u044c\u043d\u044b\u0435 \u0441\u0430\u0439\u0442\u044b \u043d\u0430\u043f\u0440\u044f\u043c\u0443\u044e, \u043e\u0441\u0442\u0430\u043b\u044c\u043d\u043e\u0435 \u0447\u0435\u0440\u0435\u0437 \u043f\u0440\u043e\u043a\u0441\u0438. 70+ \u043f\u0440\u0435\u0434\u0443\u0441\u0442\u0430\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044b\u0445 \u0434\u043e\u043c\u0435\u043d\u043e\u0432.',
+                f2_title: 'Kill Switch', f2_text: '\u0411\u043b\u043e\u043a\u0438\u0440\u043e\u0432\u043a\u0430 \u0441\u0435\u0442\u0438 \u043f\u0440\u0435\u0434\u043e\u0442\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u0443\u0442\u0435\u0447\u043a\u0438. \u0415\u0441\u043b\u0438 VPN \u043e\u0442\u043a\u043b\u044e\u0447\u0438\u0442\u0441\u044f, \u0432\u0435\u0441\u044c \u0442\u0440\u0430\u0444\u0438\u043a \u043e\u0441\u0442\u0430\u043d\u043e\u0432\u0438\u0442\u0441\u044f. \u0412\u0430\u0448 IP \u0441\u043a\u0440\u044b\u0442.',
+                f3_title: '\u041e\u0431\u0445\u043e\u0434 DPI', f3_text: '\u041f\u0440\u043e\u0434\u0432\u0438\u043d\u0443\u0442\u0430\u044f \u043e\u0431\u0444\u0443\u0441\u043a\u0430\u0446\u0438\u044f \u0441 \u0444\u0440\u0430\u0433\u043c\u0435\u043d\u0442\u0430\u0446\u0438\u0435\u0439 TLS, \u043c\u0443\u043b\u044c\u0442\u0438\u043f\u043b\u0435\u043a\u0441\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435\u043c \u0438 \u043f\u0430\u0434\u0434\u0438\u043d\u0433\u043e\u043c. \u041e\u0431\u0445\u043e\u0434 \u0433\u043b\u0443\u0431\u043e\u043a\u043e\u0439 \u0438\u043d\u0441\u043f\u0435\u043a\u0446\u0438\u0438 \u043f\u0430\u043a\u0435\u0442\u043e\u0432.',
+                f4_title: '\u041c\u0435\u043d\u0435\u0434\u0436\u0435\u0440 \u043f\u043e\u0434\u043f\u0438\u0441\u043e\u043a', f4_text: '\u0418\u043c\u043f\u043e\u0440\u0442 \u0441\u0435\u0440\u0432\u0435\u0440\u043e\u0432 \u043f\u043e URL \u0438\u043b\u0438 QR-\u043a\u043e\u0434\u0443. \u0410\u0432\u0442\u043e\u043e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u0438\u0435 \u0441\u043f\u0438\u0441\u043a\u043e\u0432. \u0423\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u043d\u0435\u0441\u043a\u043e\u043b\u044c\u043a\u0438\u043c\u0438 \u043f\u043e\u0434\u043f\u0438\u0441\u043a\u0430\u043c\u0438.',
+                f5_title: '\u0410\u0432\u0442\u043e\u043f\u0435\u0440\u0435\u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0435', f5_text: '\u042d\u043a\u0441\u043f\u043e\u043d\u0435\u043d\u0446\u0438\u0430\u043b\u044c\u043d\u044b\u0439 \u043e\u0442\u043a\u0430\u0442 \u0441 \u0430\u0432\u0442\u043e\u043f\u0435\u0440\u0435\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0435\u043c \u0441\u0435\u0440\u0432\u0435\u0440\u043e\u0432. \u0411\u0435\u0441\u0448\u043e\u0432\u043d\u044b\u0435 \u043f\u0435\u0440\u0435\u0445\u043e\u0434\u044b WiFi \u2194 \u043c\u043e\u0431\u0438\u043b\u044c\u043d\u0430\u044f \u0441\u0435\u0442\u044c.',
+                f6_title: '\u041d\u0443\u043b\u0435\u0432\u043e\u0439 \u0441\u0431\u043e\u0440 \u0434\u0430\u043d\u043d\u044b\u0445', f6_text: '\u041d\u0438\u043a\u0430\u043a\u043e\u0439 \u0430\u043d\u0430\u043b\u0438\u0442\u0438\u043a\u0438. \u041d\u0438\u043a\u0430\u043a\u043e\u0433\u043e \u0442\u0440\u0435\u043a\u0438\u043d\u0433\u0430. \u041d\u0438\u043a\u0430\u043a\u0438\u0445 \u043b\u043e\u0433\u043e\u0432. \u0412\u0441\u0451 \u043e\u0441\u0442\u0430\u0451\u0442\u0441\u044f \u043d\u0430 \u0432\u0430\u0448\u0435\u043c \u0443\u0441\u0442\u0440\u043e\u0439\u0441\u0442\u0432\u0435.',
+                proto_label: '\u041f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u044b', proto_title: '\u0428\u0435\u0441\u0442\u044c \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u043e\u0432.<br>\u041e\u0434\u0438\u043d \u043a\u043b\u0438\u0435\u043d\u0442.',
+                proto_desc: '\u041f\u043e\u043b\u043d\u0430\u044f \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0430 \u0441\u043e\u0432\u0440\u0435\u043c\u0435\u043d\u043d\u044b\u0445 \u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b\u043e\u0432 \u0441 REALITY, xHTTP \u0442\u0440\u0430\u043d\u0441\u043f\u043e\u0440\u0442\u043e\u043c \u0438 \u043f\u0440\u043e\u0434\u0432\u0438\u043d\u0443\u0442\u044b\u043c \u0448\u0438\u0444\u0440\u043e\u0432\u0430\u043d\u0438\u0435\u043c.',
+                p1_desc: '\u041b\u0451\u0433\u043a\u0438\u0439 \u0438 \u0431\u044b\u0441\u0442\u0440\u044b\u0439 \u0441 \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u043e\u0439 REALITY', p2_desc: '\u0428\u0438\u0444\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u0441 \u0430\u0432\u0442\u043e UUID',
+                p3_desc: '\u0421\u0442\u0435\u043b\u0441-\u043f\u0440\u043e\u0442\u043e\u043a\u043e\u043b \u043d\u0430 \u0431\u0430\u0437\u0435 TLS', p4_desc: '\u041a\u043b\u0430\u0441\u0441\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u043f\u0440\u043e\u043a\u0441\u0438 \u0441 AEAD',
+                p5_desc: '\u0423\u043d\u0438\u0432\u0435\u0440\u0441\u0430\u043b\u044c\u043d\u044b\u0439 \u0441\u0442\u0430\u043d\u0434\u0430\u0440\u0442', p6_desc: '\u041f\u0440\u043e\u0441\u0442\u043e\u0439 HTTP/HTTPS \u043f\u0440\u043e\u043a\u0441\u0438',
+                priv_label: '\u041f\u0440\u0438\u0432\u0430\u0442\u043d\u043e\u0441\u0442\u044c \u043f\u0440\u0435\u0436\u0434\u0435 \u0432\u0441\u0435\u0433\u043e', priv_title: '\u0412\u0430\u0448\u0438 \u0434\u0430\u043d\u043d\u044b\u0435 \u043e\u0441\u0442\u0430\u044e\u0442\u0441\u044f<br>\u043d\u0430 \u0432\u0430\u0448\u0435\u043c \u0443\u0441\u0442\u0440\u043e\u0439\u0441\u0442\u0432\u0435',
+                priv_desc: 'V2Link \u2014 \u043a\u043b\u0438\u0435\u043d\u0442\u0441\u043a\u0438\u0439 \u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442. \u041c\u044b \u043d\u0435 \u0443\u043f\u0440\u0430\u0432\u043b\u044f\u0435\u043c \u0441\u0435\u0440\u0432\u0435\u0440\u0430\u043c\u0438, \u043d\u0435 \u0432\u0438\u0434\u0438\u043c \u0442\u0440\u0430\u0444\u0438\u043a \u0438 \u043d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u0441\u043e\u0431\u0438\u0440\u0430\u0435\u043c.',
+                priv_1: '<strong>\u041d\u0435\u0442 \u0430\u043d\u0430\u043b\u0438\u0442\u0438\u043a\u0438 \u0438 \u0442\u0435\u043b\u0435\u043c\u0435\u0442\u0440\u0438\u0438</strong> \u2014 \u043d\u043e\u043b\u044c \u0441\u0442\u043e\u0440\u043e\u043d\u043d\u0438\u0445 SDK',
+                priv_2: '<strong>\u041d\u0435\u0442 \u043b\u043e\u0433\u043e\u0432 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0439</strong> \u2014 \u043c\u044b \u043d\u0435 \u0432\u0438\u0434\u0438\u043c, \u0447\u0442\u043e \u0432\u044b \u0434\u0435\u043b\u0430\u0435\u0442\u0435',
+                priv_3: '<strong>\u041d\u0435\u0442 \u043e\u0442\u0441\u043b\u0435\u0436\u0438\u0432\u0430\u043d\u0438\u044f IP</strong> \u2014 \u0432\u0430\u0448\u0430 \u043b\u0438\u0447\u043d\u043e\u0441\u0442\u044c \u043e\u0441\u0442\u0430\u0451\u0442\u0441\u044f \u0432\u0430\u0448\u0435\u0439',
+                priv_4: '<strong>\u0422\u043e\u043b\u044c\u043a\u043e \u043b\u043e\u043a\u0430\u043b\u044c\u043d\u043e\u0435 \u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435</strong> \u2014 \u043a\u043e\u043d\u0444\u0438\u0433\u0438 \u0443\u0434\u0430\u043b\u044f\u044e\u0442\u0441\u044f \u0441 \u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u0435\u043c',
+                cta_title: '\u0412\u043e\u0437\u044c\u043c\u0438\u0442\u0435 \u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044c<br>\u043d\u0430\u0434 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u0435\u043c',
+                cta_desc: '\u0411\u0435\u0441\u043f\u043b\u0430\u0442\u043d\u043e. \u0411\u0435\u0437 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430\u0446\u0438\u0438. \u0411\u0435\u0437 \u0441\u0431\u043e\u0440\u0430 \u0434\u0430\u043d\u043d\u044b\u0445.<br>\u041f\u0440\u043e\u0441\u0442\u043e \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u0439\u0442\u0435\u0441\u044c.',
+            }
+        };
+
+        let currentLang = localStorage.getItem('v2link-lang') || 'en';
+
+        function setLang(lang) {
+            currentLang = lang;
+            localStorage.setItem('v2link-lang', lang);
+            document.documentElement.lang = lang;
+            document.querySelectorAll('.lang-btn').forEach(function(btn) {
+                btn.classList.toggle('active', btn.textContent.trim() === lang.toUpperCase());
+            });
+            const t = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(function(el) {
+                const key = el.getAttribute('data-i18n');
+                if (t[key] !== undefined) {
+                    if (el.hasAttribute('data-i18n-html')) {
+                        el.innerHTML = t[key]; // Safe: all values are hardcoded static strings, no user input
+                    } else {
+                        el.textContent = t[key];
+                    }
+                }
+            });
+        }
+
+        setLang(currentLang);
+    </script>
+</body>
+</html>
