@@ -1,0 +1,15 @@
+{
+  "project": "v2link-website",
+  "sites": [
+    {
+      "host": "v2link.pro",
+      "projectId": "prj_fFddOnaFMnPuyWk7X58TZzL3gj9g",
+      "key": "45a78117f70501c634e2957044c05040",
+      "keyLocation": "https://v2link.pro/45a78117f70501c634e2957044c05040.txt",
+      "markerUrl": "https://v2link.pro/indexnow-deployment.json",
+      "fallbackUrls": [
+        "https://v2link.pro/"
+      ]
+    }
+  ]
+}
